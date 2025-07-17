@@ -1,0 +1,24 @@
+% Eksen tanımları
+Throttle = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+Temp = [-40, -20, 0, 10, 20, 30, 40, 50];
+Pressure = [40, 50, 60, 70, 80, 90, 101.3];
+
+% Nominal RPM (Throttle'a göre)
+RPM_nominal = [0, 33, 36, 42, 52, 64, 74, 83, 91, 97, 104, 109] * 1e3;
+
+% LUT matrisi oluştur
+RPM_LUT = zeros(length(Throttle), length(Temp), length(Pressure));
+
+for i = 1:length(Throttle)
+    rpm0 = RPM_nominal(i);
+    for j = 1:length(Temp)
+        % Sıcaklık etkisi (referans 15°C)
+        f_temp = 1 - 0.005 * (Temp(j) - 15);
+        for k = 1:length(Pressure)
+            % Basınç etkisi
+            f_pressure = Pressure(k) / 101.3;
+            % Güncel RPM hesaplama
+            RPM_LUT(i,j,k) = rpm0 * f_temp * f_pressure;
+        end
+    end
+end
